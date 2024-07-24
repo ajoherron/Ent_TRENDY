@@ -21,10 +21,13 @@
    2. This step converts the intermediate GISS variables created thus far into TRENDY variables, using formulae supplied. 
    3. As this is a data-intensive step, I've broken up the variables into chunk (same as those from the trendy_listofvariables_GCP2023 document).
    4. This will output the finished results in the directory specified in Step 0.
+5. (Secondary) Remember to add README to output directory
+   1. This was copied from the GlobalCarbonBudget-Protocol-2023 document.
+   2. This has been labeled "TRENDY_README.md" to avoid confusion with the primary README for this repository.
 
 # Structure (from Nancy)
 Subdirectory:
-trendy-gcb2024/
-  README
-	Modules to load
-	How-to run etc.
+-trendy-gcb2024/
+	- README
+		- Modules to load
+		- How-to run etc.
