@@ -6,7 +6,8 @@ from tqdm import tqdm
 from variables import STANDARD_VARIABLES, R_VARIABLES
 
 ### User Set variables ###
-GIJ_PATH = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/*"
+GIJ_DIR = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/"
+INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
 
 months_to_mm = {
     "JAN": "01",
@@ -38,11 +39,11 @@ def normalize_fill_values(ds, variables):
     return ds
 
 
-def concatenate_monthly_data(GIJ_PATH, VARIABLES, output_file_name):
+def concatenate_monthly_data(GIJ_DIR, INT_DIR, VARIABLES, file_name):
 
     # Gather all file paths
-    gij_directory = f"/discover/nobackup/aherron1/TRENDY/control_tr_gij/*"
-    file_paths = sorted(glob.glob(gij_directory))
+    GIJ_DIR += "*"
+    file_paths = sorted(glob.glob(GIJ_DIR))
     print(len(file_paths))
 
     # Calculate adjusted time values
@@ -93,14 +94,14 @@ def concatenate_monthly_data(GIJ_PATH, VARIABLES, output_file_name):
     ds_all = ds_all.sortby("time")
 
     # Saved concatenated dataset in data folder
-    ds_path = f"/discover/nobackup/aherron1/TRENDY/control_data/{output_file_name}.nc"
+    ds_path = INT_DIR + f"{file_name}.nc"
     ds_all.to_netcdf(ds_path)
     print(f"Concatenated {len(file_paths)} datasets into:\n{ds_all}")
 
 
 # Concatentate standard variables into a single dataset
-output_file_name = "ds_standard_vars"
-concatenate_monthly_data(GIJ_PATH, STANDARD_VARIABLES, output_file_name)
+file_name = "ds_standard_vars"
+concatenate_monthly_data(GIJ_DIR, INT_DIR, STANDARD_VARIABLES, file_name)
 
 
 # Create datasets for each Ent variable
@@ -118,4 +119,4 @@ for X in R_VARIABLES:
 
     # Concatenate each Ent variable as a single dataset
     output_file_name = X
-    concatenate_monthly_data(GIJ_PATH, variable_subset, output_file_name)
+    concatenate_monthly_data(GIJ_DIR, INT_DIR, variable_subset, output_file_name)
