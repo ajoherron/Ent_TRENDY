@@ -2,8 +2,13 @@
 ### User-set paths ###
 ######################
 
+# Directory for storing scaled data
 GIJ_DIR = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/"
+
+# Directory for storing intermediate files used for variable conversion
 INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
+
+# Directory where completed outputs will go
 OUT_DIR = "/discover/nobackup/aherron1/TRENDY/control_output/"
 
 # Used ocnfr, lakefr, landicefr
