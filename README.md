@@ -1,8 +1,15 @@
 # Instructions for running scripts
-0. Set paths
-   1. First, set all the relevant paths in the config file
-      1. asdf
-   2. Next, set the paths for the input data directory and gij directory in 1_scaleacc_gij.sh
+0. Setup
+   1. Set paths
+      1. First, set all the relevant paths in the config file
+      2. Next, set the paths for the input data directory and gij directory in 1_scaleacc_gij.sh
+   2. Activate conda environment with 'conda env -f environment.yml'
+      1. If you have access to the following dependencies, you can skip this step:
+         1. Python
+         2. glob2
+         3. xarray
+         4. pandas
+         5. tqdm
 1. 1_scaleacc_gij.sh
    1. Run './1_scaleacc_gij.sh'
    2. This will loop though all the input files, and scale them using the following command: scaleacc <file> gij
