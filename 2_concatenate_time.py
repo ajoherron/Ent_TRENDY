@@ -1,8 +1,10 @@
+# Standard imports
 import glob
 import xarray as xr
 import pandas as pd
 from tqdm import tqdm
 
+# Local imports
 from config import GIJ_DIR, INT_DIR, STANDARD_VARIABLES, R_VARIABLES
 
 

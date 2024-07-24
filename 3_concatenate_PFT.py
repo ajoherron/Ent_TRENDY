@@ -1,6 +1,8 @@
+# Standard library imports
 import xarray as xr
 from tqdm import tqdm
 
+# Local imports
 from config import INT_DIR, R_VARIABLES
 
 

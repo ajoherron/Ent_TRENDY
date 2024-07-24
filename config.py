@@ -4,6 +4,17 @@
 
 GIJ_DIR = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/"
 INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
+OUT_DIR = "/discover/nobackup/aherron1/TRENDY/control_output/"
+
+# Used ocnfr, lakefr, landicefr
+TOPO_PATH = f"{INT_DIR}Z2HX2fromZ1QX1N.BS1.nc"
+
+# Only used for dz
+SOIL_PATH = f"{INT_DIR}S144X900098M.ext.nc"
+
+# Can choose any GIJ file, as this is only used for axyp
+GIJ_PATH = f"{INT_DIR}APR1701.gijL0_control_tr.nc"
+
 
 #########################################
 ### No need to alter below this point ###
