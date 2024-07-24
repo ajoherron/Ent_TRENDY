@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from variables import STANDARD_VARIABLES, R_VARIABLES
 
-### User Set variables ###
+### User-set variables ###
 GIJ_DIR = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/"
 INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
 
