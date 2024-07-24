@@ -1,8 +1,7 @@
 import xarray as xr
 from tqdm import tqdm
 
-from variables import R_VARIABLES
-from paths import INT_DIR
+from config import INT_DIR, R_VARIABLES
 
 
 # Concatenate ra___ variables along PFT dimension

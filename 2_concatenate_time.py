@@ -3,8 +3,7 @@ import xarray as xr
 import pandas as pd
 from tqdm import tqdm
 
-from variables import STANDARD_VARIABLES, R_VARIABLES
-from paths import GIJ_DIR, INT_DIR
+from config import GIJ_DIR, INT_DIR, STANDARD_VARIABLES, R_VARIABLES
 
 
 months_to_mm = {
