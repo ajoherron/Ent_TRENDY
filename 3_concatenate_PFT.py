@@ -2,9 +2,7 @@ import xarray as xr
 from tqdm import tqdm
 
 from variables import R_VARIABLES
-
-### User-set variables ###
-INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
+from paths import INT_DIR
 
 
 # Concatenate ra___ variables along PFT dimension

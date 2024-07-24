@@ -4,10 +4,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from variables import STANDARD_VARIABLES, R_VARIABLES
+from paths import GIJ_DIR, INT_DIR
 
-### User-set variables ###
-GIJ_DIR = "/discover/nobackup/aherron1/TRENDY/control_tr_gij/"
-INT_DIR = "/discover/nobackup/aherron1/TRENDY/control_intermediates/"
 
 months_to_mm = {
     "JAN": "01",
