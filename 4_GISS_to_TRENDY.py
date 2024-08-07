@@ -122,11 +122,15 @@ def format_coordinates_metadata(ds):
         elif "PFT" in ds_renamed.coords:
             ds_renamed = ds_renamed.transpose("longitude", "latitude", "PFT", "time")
 
+    # Ensures metadata is global, rather than associated with individual variables
+    ds_renamed = ds_renamed.to_dataset()
+
     # Update metadata
     ds_renamed.attrs["model_description"] = (
         "Ent Terrestrial Biosphere Model, configuration with NASA Goddard Institute for Space Studies ModelE-2.1 land surface hydrology physics (Kelley et al. 2020, doi:10.1029/2019MS002025), biophysics-only mode with vegetation structure and land use change as documented in Ito et al. (2020, doi:10.1029/2019MS002030), with the following updates to ModelE-2.1:  addition of a standalone land surface model (SLSM) driver for 0.5x0.5 degree simulations"
     )
     ds_renamed.attrs["institution"] = "NASA Goddard Institute for Space Studies"
+    ds_renamed.attrs["contact"] = "Nancy.Y.Kiang@nasa.gov"
 
     return ds_renamed
 
