@@ -533,6 +533,7 @@ cSoilpools = xr.concat(
     ],
     dim="Pool",
 )
+cSoilpools = cSoilpools.rename("cSoilpools")
 cSoilpools["Pool"] = [
     "SURFMET",
     "SURFSTR",
