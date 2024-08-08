@@ -1,6 +1,7 @@
 # Standard library imports
 import xarray as xr
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 
 # Local imports
@@ -95,6 +96,22 @@ days_in_month = xr.DataArray(
 ######################################
 
 
+def replace_zeros_with_nan(ds):
+    # If the input is a DataArray, handle it directly
+    if isinstance(ds, xr.DataArray):
+        return ds.where(ds != 0, np.nan)
+
+    # If the input is a Dataset, create a copy and modify it
+    ds_copy = ds.copy()
+
+    # Loop through all data variables in the dataset
+    for var in ds_copy.data_vars:
+        # Replace 0s with NaNs
+        ds_copy[var] = ds_copy[var].where(ds_copy[var] != 0, np.nan)
+
+    return ds_copy
+
+
 def format_coordinates_metadata(ds):
     ds_renamed = ds.copy()
 
@@ -135,17 +152,17 @@ def format_coordinates_metadata(ds):
     return ds_renamed
 
 
-def save_to_netcdf(da_list):
+def save_to_netcdf(ds_list):
 
     # Loop through all data arrays
-    for da in tqdm(da_list):
+    for ds in tqdm(ds_list):
 
         # Format coordinates into correct order and label
-        da = format_coordinates_metadata(da)
+        ds = format_coordinates_metadata(ds)
 
         # Save to output directory
-        file_name = "TEST_" + da.name + ".nc"
-        da.to_netcdf(f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{file_name}")
+        variable_name = list(ds.data_vars)[0]
+        ds.to_netcdf(f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc")
 
 
 ########################
@@ -547,6 +564,7 @@ cSoilpools["Pool"] = [
 ]
 cSoilpools.attrs["units"] = "kg m-2"
 cSoilpools.attrs["long_name"] = "Carbon in Soil Pools"
+cSoilpools = replace_zeros_with_nan(cSoilpools)
 
 # Format and save each variable
 variable_list = [
