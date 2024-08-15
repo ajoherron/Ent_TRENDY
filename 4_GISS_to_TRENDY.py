@@ -449,7 +449,7 @@ oceanCoverFrac.attrs["long_name"] = "Fractional Ocean Cover"
 
 # Row 53
 LAI = ds["LAI"].copy()
-lai = LAI * vsfr.copy() / 100
+lai = LAI * (100 - ocnfr.copy()) * vsfr.copy() / 100
 lai = lai.rename("lai")
 lai.attrs["units"] = ""
 lai.attrs["long_name"] = "Leaf Area Index"
