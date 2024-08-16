@@ -20,6 +20,8 @@ SOIL_PATH = f"{INT_DIR}S144X900098M.ext.nc"
 # Can choose any GIJ file, as this is only used for axyp
 GIJ_PATH = f"{INT_DIR}APR1701.gijL0_control_tr.nc"
 
+# Used for formatting
+PFT_PATH = "/discover/nobackup/projects/giss_ana/pub/Ent_TBM/EntGVSD/entgvsd_v1/entgvsd_v1.1/2HX2/modelE/nc4/V2HX2_EntGVSD_v1.1_16G_BMSa_lai_2004_Oct_modelE.nc"
 
 #########################################
 ### No need to alter below this point ###

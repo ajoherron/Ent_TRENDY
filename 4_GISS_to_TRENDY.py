@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 # Local imports
-from config import INT_DIR, OUT_DIR, TOPO_PATH, SOIL_PATH, GIJ_PATH
+from config import INT_DIR, OUT_DIR, TOPO_PATH, SOIL_PATH, GIJ_PATH, PFT_PATH
 
 #############################################
 ### Read in data as datasets using xarray ###
@@ -22,6 +22,9 @@ ds_soil = xr.open_dataset(SOIL_PATH)
 
 # Miscellaneous GIJ file used for axyp
 ds_gij = xr.open_dataset(GIJ_PATH)
+
+# File used for PFT naming conventions
+ds_PFT_names = xr.open_dataset(PFT_PATH)
 
 # Open Ent variable datasets
 ds_ra001 = xr.open_dataset(f"{INT_DIR}ra001_PFT_dim.nc")
@@ -139,7 +142,7 @@ def format_coordinates_metadata(ds):
         elif "PFT" in ds_renamed.coords:
             ds_renamed = ds_renamed.transpose("longitude", "latitude", "PFT", "time")
 
-    # Ensures metadata is global, rather than associated with individual variables
+    # Ensure metadata is global, rather than associated with individual variables
     ds_renamed = ds_renamed.to_dataset()
 
     # Update metadata
@@ -149,7 +152,49 @@ def format_coordinates_metadata(ds):
     ds_renamed.attrs["institution"] = "NASA Goddard Institute for Space Studies"
     ds_renamed.attrs["contact"] = "Nancy.Y.Kiang@nasa.gov"
 
+    # Remove fill values for latitude/longitude
+    ds_renamed.latitude.encoding["_FillValue"] = None
+    ds_renamed.longitude.encoding["_FillValue"] = None
+
+    # Set fill value for all variables to -99999
+    for var in ds_renamed.data_vars:
+        ds_renamed[var].encoding["_FillValue"] = -99999
+
     return ds_renamed
+
+
+def rename_PFT(ds):
+
+    # Collect list of formatted netcdf names
+    netcdf_name_list = []
+    for netcdf_name in list(ds_PFT_names.lctype.values[:16]):
+        cleaned_string = netcdf_name.decode("utf-8").strip()
+        netcdf_name_list.append(cleaned_string)
+
+    # Create netcdf name mapping dictionary, assign to PFT coordinates
+    pft_netcdf_name_mapping = {}
+    for i in range(len(netcdf_name_list)):
+        pft_netcdf_name_mapping[str(i + 1)] = netcdf_name_list[i]
+    ds = ds.assign_coords(
+        PFT=[pft_netcdf_name_mapping[str(pft)] for pft in ds["PFT"].values]
+    )
+
+    # Create mapping between lctype and PFT
+    lctype_to_pft = dict(zip(ds_PFT_names.lctype.values, ds.PFT.values))
+
+    # Create data array with PFT as dimension
+    new_longname = xr.DataArray(
+        data=np.zeros(16, dtype="|S53"), dims=["PFT"], coords={"PFT": ds.PFT}
+    )
+
+    # Fill the new DataArray with lctype_longname values
+    for lctype, pft in lctype_to_pft.items():
+        new_longname.loc[pft] = ds_PFT_names.lctype_longname.sel(lctype=lctype).values
+
+    # Add new variable to dataset
+    ds["lctype_longname"] = new_longname
+
+    return ds
 
 
 def save_to_netcdf(ds_list):
@@ -160,9 +205,16 @@ def save_to_netcdf(ds_list):
         # Format coordinates into correct order and label
         ds = format_coordinates_metadata(ds)
 
+        # Rename PFT coordinates and add longname variable
+        if "PFT" in ds.coords:
+            ds = rename_PFT(ds)
+
         # Save to output directory
         variable_name = list(ds.data_vars)[0]
-        ds.to_netcdf(f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc")
+        ds.to_netcdf(
+            f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/TEST_{variable_name}.nc",
+            encoding={var: {"zlib": True, "complevel": 1} for var in ds.data_vars},
+        )
 
 
 ########################
