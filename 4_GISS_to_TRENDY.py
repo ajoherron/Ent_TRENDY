@@ -163,8 +163,9 @@ def format_coordinates_metadata(ds):
     return ds_renamed
 
 
-def rename_PFT(ds):
+def rename_PFT(ds, ds_PFT_names):
 
+    ### Rename PFT from numeric to categorical ###
     # Collect list of formatted netcdf names
     netcdf_name_list = []
     for netcdf_name in list(ds_PFT_names.lctype.values[:16]):
@@ -179,21 +180,33 @@ def rename_PFT(ds):
         PFT=[pft_netcdf_name_mapping[str(pft)] for pft in ds["PFT"].values]
     )
 
-    # Create mapping between lctype and PFT
+    ### Create PFT_longname data variable ###
+    # Create a mapping between lctype and PFT
     lctype_to_pft = dict(zip(ds_PFT_names.lctype.values, ds.PFT.values))
 
-    # Create data array with PFT as dimension
+    # Create a new DataArray with PFT as dimension instead of lctype
     new_longname = xr.DataArray(
-        data=np.zeros(16, dtype="|S53"), dims=["PFT"], coords={"PFT": ds.PFT}
+        data=np.zeros(16, dtype="|S13"), dims=["PFT"], coords={"PFT": ds.PFT}
     )
 
     # Fill the new DataArray with lctype_longname values
     for lctype, pft in lctype_to_pft.items():
         new_longname.loc[pft] = ds_PFT_names.lctype_longname.sel(lctype=lctype).values
 
-    # Add new variable to dataset
-    ds["lctype_longname"] = new_longname
+    # Decode the byte strings to regular strings
+    decoded_longnames = [
+        name.decode("utf-8").strip() if isinstance(name, bytes) else name.strip()
+        for name in new_longname.values
+    ]
 
+    # Reassign the decoded longnames back to the DataArray using dtype=str to avoid converting back to byte strings
+    ds["PFT_longname"] = xr.DataArray(
+        data=np.array(
+            decoded_longnames, dtype=str
+        ),  # Use dtype=str to keep regular strings
+        dims=["PFT"],
+        coords={"PFT": ds.PFT},
+    )
     return ds
 
 
