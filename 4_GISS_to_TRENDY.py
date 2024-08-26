@@ -441,61 +441,62 @@ save_to_netcdf(variable_list)
 
 # Row 36
 gpp = ds["gpp"].copy()
-gpp = gpp * days_in_month * 100 / (100 - ocnfr.copy())
+gpp = gpp * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 gpp = gpp.rename("gpp")
 gpp.attrs["units"] = "kg m-2 s-1"
 gpp.attrs["long_name"] = "Gross Primary Production"
 
 # Row 37
 rauto = ds["rauto"].copy()
-ra = rauto * days_in_month * 100 / (100 - ocnfr.copy())
+ra = rauto * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 ra = ra.rename("ra")
 ra.attrs["units"] = "kg m-2 s-1"
 ra.attrs["long_name"] = "Autotrophic (Plant) Respiration"
 
 # Row 38
 npp = gpp.copy() - ra.copy()
+npp = npp * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 npp = npp.rename("npp")
 npp.attrs["units"] = "kg m-2 s-1"
 npp.attrs["long_name"] = "Net Primary Production"
 
 # Row 39
 soilresp = ds["soilresp"].copy()
-rh = soilresp * days_in_month * 100 / (100 - ocnfr.copy())
+rh = soilresp * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 rh = rh.rename("rh")
 rh.attrs["units"] = "kg m-2 s-1"
 rh.attrs["long_name"] = "Heterotrophic Respiration"
 
 # Row 42
 ecvf = ds["ecvf"].copy()
-fLuc = ecvf * 0.001 * days_in_year * 100 / (100 - ocnfr.copy())
+fLuc = ecvf * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 fLuc = fLuc.rename("fLuc")
 fLuc.attrs["units"] = "kg m-2 s-1"
 fLuc.attrs["long_name"] = "CO2 Flux to Atmosphere from Land Use Change"
 
 # Row 43
 gpp = ds["gpp"].copy()
-nbp = gpp - rauto.copy() - soilresp.copy() - ecvf.copy()
-nbp = nbp * 0.001 * days_in_year * 100 / (100 - ocnfr)
+nbp = gpp.copy() - rauto.copy() - soilresp.copy() - ecvf.copy()
+nbp = nbp * 0.001 / 86400 * soilfr.copy() / (100 - ocnfr.copy())
 nbp = nbp.rename("nbp")
 nbp.attrs["units"] = "kg m-2 s-1"
 nbp.attrs["long_name"] = "Net Biospheric Production"
 
 # Row 45
-gpppft = ra003.copy() * days_in_month
+gpppft = ra003.copy() * 0.001 / 86400
 gpppft = gpppft.rename("gpppft")
 gpppft.attrs["units"] = "kg m-2 s-1"
 gpppft.attrs["long_name"] = "Vegtype level GPP"
 
 # Row 46
 npppft = ra003.copy() - ra016.copy()
-npppft *= days_in_month
+npppft = npppft * 0.001 / 86400
 npppft = npppft.rename("npppft")
 npppft.attrs["units"] = "kg m-2 s-1"
 npppft.attrs["long_name"] = "Vegtype level NPP"
 
 # Row 47
-rhpft = ra025.copy() * days_in_month
+rhpft = ra025.copy() * 0.001 / 86400
 rhpft = rhpft.rename("rhpft")
 rhpft.attrs["units"] = "kg m-2 s-1"
 rhpft.attrs["long_name"] = "Vegtype level Rh"
@@ -513,8 +514,7 @@ oceanCoverFrac.attrs["units"] = "fraction"
 oceanCoverFrac.attrs["long_name"] = "Fractional Ocean Cover"
 
 # Row 53
-LAI = ds["LAI"].copy()
-lai = LAI * (100 - ocnfr.copy()) * vsfr.copy() / 100
+lai = ds["LAI"].copy()
 lai = lai.rename("lai")
 lai.attrs["units"] = ""
 lai.attrs["long_name"] = "Leaf Area Index"
