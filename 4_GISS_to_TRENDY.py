@@ -152,15 +152,20 @@ def format_coordinates_metadata(ds):
     ds_renamed.attrs["institution"] = "NASA Goddard Institute for Space Studies"
     ds_renamed.attrs["contact"] = "Nancy.Y.Kiang@nasa.gov"
 
+    return ds_renamed
+
+
+def set_fill_values(ds):
+
     # Remove fill values for latitude/longitude
-    ds_renamed.latitude.encoding["_FillValue"] = None
-    ds_renamed.longitude.encoding["_FillValue"] = None
+    ds.latitude.encoding["_FillValue"] = None
+    ds.longitude.encoding["_FillValue"] = None
 
     # Set fill value for all variables to -99999
-    for var in ds_renamed.data_vars:
-        ds_renamed[var].encoding["_FillValue"] = -99999
+    for var in ds.data_vars:
+        ds[var].encoding["_FillValue"] = -99999
 
-    return ds_renamed
+    return ds
 
 
 def rename_PFT(ds, ds_PFT_names):
@@ -217,6 +222,9 @@ def save_to_netcdf(ds_list):
 
         # Format coordinates into correct order and label
         ds = format_coordinates_metadata(ds)
+
+        # Ensure all fill values are -99999
+        ds = set_fill_values(ds)
 
         # Rename PFT coordinates and add longname variable
         if "PFT" in ds.coords:
