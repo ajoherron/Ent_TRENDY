@@ -238,6 +238,20 @@ def save_to_netcdf(ds_list):
         )
 
 
+def correct_latitude(data_array):
+    corrected_lat = data_array["lat"].values
+    corrected_lat[0] = -90
+    corrected_lat[-1] = 90
+    return data_array.assign_coords(lat=corrected_lat)
+
+
+def expand_and_concat(base_data, new_data, pft_index):
+    expanded_data = new_data.expand_dims(dim={"PFT": [pft_index]})
+    combined_data = xr.concat([base_data, expanded_data], dim="PFT")
+    combined_data["PFT"] = np.append(base_data["PFT"].values, str(pft_index))
+    return combined_data
+
+
 ########################
 ### ModelE Variables ###
 ########################
@@ -292,6 +306,11 @@ dz = ds_soil["dz"].copy()
 dz = dz.rename("dz")
 dz.attrs["units"] = "m"
 dz.attrs["long_name"] = "Thickness of each soil layer"
+
+# Correct latitude values
+ocnfr = correct_latitude(ocnfr)
+lakefr = correct_latitude(lakefr)
+landicefr = correct_latitude(landicefr)
 
 # Format and save each variable
 variable_list = [
@@ -510,8 +529,11 @@ rhpft.attrs["units"] = "kg m-2 s-1"
 rhpft.attrs["long_name"] = "Vegtype level Rh"
 
 # Row 50
-landCoverFrac = ra001.copy() * soilfr.copy() / (100 - ocnfr.copy())
-landCoverFrac = landCoverFrac.rename("landCoverFrac")
+landCoverFrac_16 = ra001.copy() * soilfr.copy() / (100 - ocnfr.copy())
+landCoverFrac_17 = expand_and_concat(landCoverFrac_16, bsfr, 17)
+landCoverFrac_18 = expand_and_concat(landCoverFrac_17, lakefr, 18)
+landCoverFrac_19 = expand_and_concat(landCoverFrac_18, landicefr, 19)
+landCoverFrac = landCoverFrac_19.rename("landCoverFrac")
 landCoverFrac.attrs["units"] = "fraction"
 landCoverFrac.attrs["long_name"] = "Fractional Land Cover of PFT"
 
