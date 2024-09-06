@@ -228,13 +228,14 @@ def save_to_netcdf(ds_list):
 
         # Rename PFT coordinates and add longname variable
         if "PFT" in ds.coords:
-            ds = rename_PFT(ds)
+            ds = rename_PFT(ds, ds_PFT_names)
 
-        # Save to output directory
+        # Save to output directory (with compression)
         variable_name = list(ds.data_vars)[0]
-        ds.to_netcdf(
-            f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/TEST_{variable_name}.nc",
-            encoding={var: {"zlib": True, "complevel": 1} for var in ds.data_vars},
+        encoding = {variable_name: {"zlib": True, "complevel": 1}}
+        ds[[variable_name]].to_netcdf(
+            f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc",
+            encoding=encoding,
         )
 
 
@@ -386,7 +387,6 @@ variable_list = [
     mrro,
     transpft,
     evapotrans,
-    transpft,
 ]
 save_to_netcdf(variable_list)
 
