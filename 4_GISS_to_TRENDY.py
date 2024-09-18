@@ -546,13 +546,13 @@ oceanCoverFrac.attrs["long_name"] = "Fractional Ocean Cover"
 # Row 53
 lai = ds["LAI"].copy()
 lai = lai.rename("lai")
-lai.attrs["units"] = ""
+lai.attrs["units"] = "m^2/m^2"
 lai.attrs["long_name"] = "Leaf Area Index"
 
 # Row 54
 laipft = ra007.copy()
 laipft = laipft.rename("laipft")
-laipft.attrs["units"] = ""
+laipft.attrs["units"] = "m^2/m^2"
 laipft.attrs["long_name"] = "Vegtype level Leaf Area Index"
 
 # Row 57
