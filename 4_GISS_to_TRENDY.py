@@ -529,7 +529,7 @@ rhpft.attrs["units"] = "kg m-2 s-1"
 rhpft.attrs["long_name"] = "Vegtype level Rh"
 
 # Row 50
-landCoverFrac_16 = ra001.copy() * soilfr.copy() / (100 - ocnfr.copy())
+landCoverFrac_16 = ra001.copy() * soilfr.copy()
 landCoverFrac_17 = expand_and_concat(landCoverFrac_16, bsfr, 17)
 landCoverFrac_18 = expand_and_concat(landCoverFrac_17, lakefr, 18)
 landCoverFrac_19 = expand_and_concat(landCoverFrac_18, landicefr, 19)
