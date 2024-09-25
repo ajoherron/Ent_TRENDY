@@ -169,11 +169,12 @@ def set_fill_values(ds):
 
 
 def rename_PFT(ds, ds_PFT_names):
+    dim_len = len(ds["PFT"])
 
     ### Rename PFT from numeric to categorical ###
     # Collect list of formatted netcdf names
     netcdf_name_list = []
-    for netcdf_name in list(ds_PFT_names.lctype.values[:16]):
+    for netcdf_name in list(ds_PFT_names.lctype.values[:dim_len]):
         cleaned_string = netcdf_name.decode("utf-8").strip()
         netcdf_name_list.append(cleaned_string)
 
@@ -191,7 +192,7 @@ def rename_PFT(ds, ds_PFT_names):
 
     # Create a new DataArray with PFT as dimension instead of lctype
     new_longname = xr.DataArray(
-        data=np.zeros(16, dtype="|S13"), dims=["PFT"], coords={"PFT": ds.PFT}
+        data=np.zeros(dim_len, dtype="|S13"), dims=["PFT"], coords={"PFT": ds.PFT}
     )
 
     # Fill the new DataArray with lctype_longname values
@@ -230,13 +231,19 @@ def save_to_netcdf(ds_list):
         if "PFT" in ds.coords:
             ds = rename_PFT(ds, ds_PFT_names)
 
+        # Format landCoverFrac
+        if len(ds["PFT"]) == 19:
+            ds = format_landCoverFrac(ds)
+
         # Save to output directory (with compression)
         variable_name = list(ds.data_vars)[0]
-        encoding = {variable_name: {"zlib": True, "complevel": 1}}
-        ds[[variable_name]].to_netcdf(
-            f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc",
-            encoding=encoding,
+        ds[variable_name].to_netcdf(
+            f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc"
         )
+
+        # encoding = {variable_name: {'zlib': True, 'complevel': 1}}
+        # ds[[variable_name]].to_netcdf(f"/discover/nobackup/aherron1/TRENDY/{OUT_DIR}/{variable_name}.nc",
+        #                              encoding=encoding)
 
 
 def correct_latitude(data_array):
@@ -251,6 +258,44 @@ def expand_and_concat(base_data, new_data, pft_index):
     combined_data = xr.concat([base_data, expanded_data], dim="PFT")
     combined_data["PFT"] = np.append(base_data["PFT"].values, str(pft_index))
     return combined_data
+
+
+def format_landCoverFrac(landCoverFrac):
+
+    # Rename dimensions to lctype
+    # landCoverFrac = rename_PFT(landCoverFrac, ds_PFT_names)
+    landCoverFrac = landCoverFrac.rename({"PFT": "lctype"})
+    landCoverFrac = landCoverFrac.rename({"PFT_longname": "lctype_longname"})
+
+    # Update lctype values
+    lctype_values = landCoverFrac["lctype"].values
+    rename_dict = {
+        "bare_bright": "bsfr",
+        "bare_dark": "lakefr",
+        "water_ice": "landicefr",
+    }
+    new_lctype_values = np.array([rename_dict.get(val, val) for val in lctype_values])
+    landCoverFrac = landCoverFrac.assign_coords(lctype=new_lctype_values)
+
+    # Update lctype_longname values
+    lctype_longname_values = landCoverFrac["lctype_longname"].values
+    rename_dict = {
+        "bare bright": "bare soil fraction",
+        "bare dark": "lake fraction",
+        "Land Ice Frac": "land ice fraction",
+    }
+    new_lctype_longname_values = np.array(
+        [rename_dict.get(val, val) for val in lctype_longname_values]
+    )
+    landCoverFrac = landCoverFrac.assign_coords(
+        lctype_longname=("lctype", new_lctype_longname_values)
+    )
+
+    # Set lctype_longname as variable instead of coordinate
+    lctype_longname_data = landCoverFrac.lctype_longname.values
+    landCoverFrac = landCoverFrac.drop_vars("lctype_longname")
+    landCoverFrac["lctype_longname"] = ("lctype", lctype_longname_data)
+    return landCoverFrac
 
 
 ########################
