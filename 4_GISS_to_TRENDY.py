@@ -233,9 +233,9 @@ def save_to_netcdf(ds_list):
         if "PFT" in ds.coords:
             ds = rename_PFT(ds, ds_PFT_names)
 
-        # Format landCoverFrac
-        if len(ds["PFT"]) == 19:
-            ds = format_landCoverFrac(ds)
+            # Format landCoverFrac
+            if len(ds["PFT"]) == 19:
+                ds = format_landCoverFrac(ds)
 
         # Save to output directory (with compression)
         variable_name = list(ds.data_vars)[0]
