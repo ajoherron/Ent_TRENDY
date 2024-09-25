@@ -51,6 +51,7 @@ ds_ra037 = xr.open_dataset(f"{INT_DIR}ra037_PFT_dim.nc")
 ds_ra038 = xr.open_dataset(f"{INT_DIR}ra038_PFT_dim.nc")
 ds_ra039 = xr.open_dataset(f"{INT_DIR}ra039_PFT_dim.nc")
 ds_ra040 = xr.open_dataset(f"{INT_DIR}ra040_PFT_dim.nc")
+ds_ra051 = xr.open_dataset(f"{INT_DIR}ra051_PFT_dim.nc")
 
 # Convert datasets to data arrays
 ra001 = ds_ra001["ra001"]
@@ -77,6 +78,7 @@ ra037 = ds_ra037["ra037"]
 ra038 = ds_ra038["ra038"]
 ra039 = ds_ra039["ra039"]
 ra040 = ds_ra040["ra040"]
+ra051 = ds_ra051["ra051"]
 
 #################
 ### Constants ###
@@ -423,6 +425,12 @@ transpft = transpft.rename("transpft")
 transpft.attrs["units"] = "W m-2"
 transpft.attrs["long_name"] = "Vegtype level transpiration"
 
+# Newly added albedo variable (row 23)
+albedopft = ra051.copy()
+albedopft = albedopft.rename("albedopft")
+albedopft.attrs["units"] = "fraction"
+albedopft.attrs["long_name"] = "Vegtype level Broadband Albedo"
+
 # Format and save each variable
 variable_list = [
     tas,
@@ -432,6 +440,7 @@ variable_list = [
     mrro,
     transpft,
     evapotrans,
+    albedopft,
 ]
 save_to_netcdf(variable_list)
 
